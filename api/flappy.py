@@ -11,3 +11,7 @@ def main(request):
             "status": 500,
             "body": "Site is DOWN"
         }
+
+# Vercel kijkt naar een exported 'handler' of 'app' — wijs die hier naar onze main functie.
+handler = main
+app = main
