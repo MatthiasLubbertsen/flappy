@@ -1,33 +1,17 @@
+from http.server import BaseHTTPRequestHandler
 import random
-import logging
-import os
 
-# Standaard logging naar stdout (Vercel pakt dit op in de function logs)
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-logger = logging.getLogger(__name__)
-
-def main(request):
-    logger.info("api/flappy.py invoked")
-    # Optioneel: log environment info om te helpen debuggen
-    logger.info("VERCEL: %s", os.environ.get("VERCEL", "unknown"))
-    # Simuleer up/down
-    up = random.choice([True, False])
-    if up:
-        status = 200
-        body = "Site is UP"
-    else:
-        status = 500
-        body = "Site is DOWN"
-
-    logger.info("Responding with status=%d body=%s", status, body)
-
-    # Vercel verwacht doorgaans een dict met statusCode, headers en body
-    return {
-        "statusCode": status,
-        "headers": {"Content-Type": "text/plain"},
-        "body": body
-    }
-
-# Vercel zoekt naar 'handler' of 'app' — exporteer beide naar onze main functie
-handler = main
-app = main
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        # Kies willekeurig tussen statuscode 200 en 500
+        status_code = random.choice([200, 500])
+        
+        # Stuur de gekozen statuscode
+        self.send_response(status_code)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        
+        # Schrijf een bericht dat de status aangeeft
+        message = f"Hello from Python! I'm sending you a {status_code} status."
+        self.wfile.write(message.encode('utf-8'))
+        return
